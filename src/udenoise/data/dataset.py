@@ -6,7 +6,7 @@ from pathlib import Path
 
 FILE_EXTENSION = "CR2"
 
-device = "cpu" if torch.cuda.is_available() else "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class RawImageDataset(Dataset):
@@ -27,6 +27,6 @@ class RawImageDataset(Dataset):
         raw_img_data = np.load(str(img_path))
         noise_img_data = None  # TODO: add noise generation
 
-        return torch.tensor(raw_img_data).to(device), torch.tensor(noise_img_data).to(
+        return torch.tensor(noise_img_data).to(device), torch.tensor(raw_img_data).to(
             device
         )
