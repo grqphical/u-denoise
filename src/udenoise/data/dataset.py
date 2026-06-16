@@ -3,6 +3,7 @@ import torch
 
 from torch.utils.data import Dataset
 from pathlib import Path
+from .noise_generator import add_noise, sample_noise_params
 
 FILE_EXTENSION = "CR2"
 
@@ -20,13 +21,16 @@ class RawImageDataset(Dataset):
         return self.image_count
 
     def __getitem__(self, index):
-        img_path = self.directory / f"{index:05d}.{FILE_EXTENSION}"
-        if not img_path.exists():
+        clean_img_path = self.directory / f"{index:05d}.{FILE_EXTENSION}"
+        if not clean_img_path.exists():
             raise ValueError("image index does not exist")
 
-        raw_img_data = np.load(str(img_path))
-        noise_img_data = None  # TODO: add noise generation
+        clean_img_data = np.load(str(clean_img_path))
 
-        return torch.tensor(noise_img_data).to(device), torch.tensor(raw_img_data).to(
-            device
+        shot_scale, read_scale = sample_noise_params()
+        noisy_img_data = add_noise(clean_img_data, shot_scale, read_scale)
+
+        return (
+            torch.from_numpy(noisy_img_data).to(device),
+            torch.from_numpy(clean_img_data).to(device),
         )
