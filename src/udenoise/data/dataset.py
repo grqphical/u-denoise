@@ -4,8 +4,7 @@ import torch
 from torch.utils.data import Dataset
 from pathlib import Path
 from .noise_generator import add_noise, sample_noise_params
-
-FILE_EXTENSION = "CR2"
+from typing import List
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -15,13 +14,14 @@ class RawImageDataset(Dataset):
 
     def __init__(self, directory: Path = Path("data/processed")) -> None:
         self.directory = directory
-        self.image_count = len(list(self.directory.glob("*")))
+        self.images: List[Path] = list(self.directory.glob("*"))
+        self.image_count = len(self.images)
 
     def __len__(self):
         return self.image_count
 
     def __getitem__(self, index):
-        clean_img_path = self.directory / f"{index:05d}.{FILE_EXTENSION}"
+        clean_img_path = self.images[index]
         if not clean_img_path.exists():
             raise ValueError("image index does not exist")
 

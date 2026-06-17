@@ -104,6 +104,7 @@ def extract_patches(
     packed = pack_bayer(raw_bayer)
     _, H, W = packed.shape
     p, s = patch_size // 2, stride // 2
+    stem = raw_path.stem
 
     if H < p or W < p:
         print(f"  Skipping {raw_path.name}: too small ({H}x{W})")
@@ -120,7 +121,7 @@ def extract_patches(
             if patch.var() < min_var:
                 continue
 
-            np.save(out_directory / f"{count:05d}.npy", patch.astype(np.float32))
+            np.save(out_directory / f"{stem}-{count:05d}.npy", patch.astype(np.float32))
             count += 1
 
     return count
