@@ -6,8 +6,6 @@ from pathlib import Path
 from .noise_generator import add_noise, sample_noise_params
 from typing import List
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
 
 class RawImageDataset(Dataset):
     """PyTorch Dataset implementation for U-Denoise's custom dataset"""
@@ -31,6 +29,6 @@ class RawImageDataset(Dataset):
         noisy_img_data = add_noise(clean_img_data, shot_scale, read_scale)
 
         return (
-            torch.from_numpy(noisy_img_data).to(device),
-            torch.from_numpy(clean_img_data).to(device),
+            torch.from_numpy(noisy_img_data).float(),
+            torch.from_numpy(clean_img_data).float(),
         )
